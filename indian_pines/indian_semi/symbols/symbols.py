@@ -9,8 +9,8 @@ classifiction nets
 结构仿照https://github.com/dmlc/gluon-cv/blob/11eb654e938b32fd746ec5f72e09a44f35e99c7a/gluoncv/model_zoo/model_zoo.py
 
 """
-from .simple import *
-from .finetuned import *
+from simple import *
+#from .finetuned import *
 
 __all__ = ['get_model', 'get_model_list']
 

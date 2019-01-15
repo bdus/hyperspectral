@@ -184,16 +184,18 @@ if __name__ == '__main__':
     for i in range(50):
         train(10,alpha=0.01*i, beta=1)
         mt_train(1,alpha=0.001,lr=0.001)
-    train(100,alpha=0.1,beta=1)
-    for i in range(500):
-        train(10,alpha=0.01,beta=1,lr=0.001)
-        mt_train(1,alpha=0.001,lr=0.001)
+    #train(100,alpha=0.1,beta=1)
+    for i in range(300):
+        train(20,alpha=0.01,beta=1,lr=0.001)
+        mt_train(10,alpha=0.001,lr=0.001)
+        
     mt_train(50,alpha=0.01,lr=0.01)
-    train(100,alpha=0.01,beta=1,lr=0.1)
+    train(50,alpha=0.01,beta=1,lr=0.1)
+    for i in range(300):
+        train(20,alpha=0.01,beta=1,lr=0.001)
+        mt_train(10,alpha=0.001,lr=0.001)    
     mt_train(20,alpha=0.01,lr=0.01)
-    train(100,alpha=0.01,beta=1,lr=0.01)
-    mt_train(10,alpha=0.01,lr=0.01)
-    train(100,alpha=0.01,beta=1,lr=0.01)
+    train(50,alpha=0.01,beta=1,lr=0.1)
     for i in range(100):
         train(10,alpha=0.01,beta=1,lr=0.001)
         mt_train(1,alpha=0.01,lr=0.01)
