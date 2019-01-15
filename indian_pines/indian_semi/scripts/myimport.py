@@ -34,4 +34,3 @@ from indian_dataset import IndianDataset
 
 train_data = gluon.data.DataLoader(dataset=IndianDataset(train=True,one_hot=True), batch_size=10,shuffle=True,last_batch='rollover')
 val_data = gluon.data.DataLoader(dataset=IndianDataset(train=False,one_hot=True), batch_size=10,shuffle=False)
-

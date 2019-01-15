@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec 27 20:14:03 2018
+Created on Tue Jan 15 17:38:33 2019
 
 @author: bdus
-
 """
+
 
 import os
 import os.path as osp
@@ -37,7 +36,7 @@ out_put_num = 16
 dropout_rate=0.8
 ctx = mx.gpu()
 #modelname = 'indian_try'
-modelname = 'indian_conv'
+modelname = 'indian_conv_msra'
 para_filepath = os.path.join(this_dir,'..','symbols','para','%s.params'%(modelname)) 
 # dataset
 train_data = gluon.data.DataLoader(dataset=IndianDataset(train=True), batch_size=batch_size ,shuffle=True,last_batch='rollover')
@@ -63,10 +62,10 @@ net.add(
     nn.Dropout(0.25),
     nn.Dense(out_put_num,activation='relu')
     )
-net.initialize(mx.init.Xavier(magnitude=2.24))
+#net.initialize(mx.init.Xavier(magnitude=2.24))
 #net.initialize(mx.init.MSRAPrelu())
 #net.initialize(mx.init.Normal(0.5) ,ctx=ctx)
-#net.load_parameters(para_filepath)
+net.load_parameters(para_filepath)
 net.collect_params().reset_ctx(ctx)
 
 # solve
@@ -85,7 +84,7 @@ def test():
 
 def train(epochs,lr=0.1):
     val_acc_bk = 0
-    trainer = gluon.Trainer(net.collect_params(),'Adam',{'learning_rate':lr})
+    trainer = gluon.Trainer(net.collect_params(),'sgd',{'learning_rate':lr})
     for epoch in range(num_epochs):
         metric.reset()
         for i, (x, y) in enumerate(train_data): 
@@ -99,18 +98,21 @@ def train(epochs,lr=0.1):
             trainer.step(batch_size)
             metric.update(y,output)
         
-        if epoch % 100 == 0:
+        if epoch % 50 == 0:
             name, acc = metric.get()
             print('[Epoch %d] Training: %s=%f'%(epoch, name, acc))
             name, val_acc = test()
             print('[Epoch %d] Validation: %s=%f'%(epoch, name, val_acc))
-            if val_acc > val_acc_bk:
-                net.save_parameters( para_filepath ) 
-                val_acc_bk = val_acc
+            if val_acc+acc > val_acc_bk:
+                print('[Epoch %d] Validation: %s=%f'%(epoch, name, val_acc))
+                net.save_parameters( os.path.join(this_dir,'..','symbols','para','%s%f.params'%(modelname, val_acc)) )                
+                val_acc_bk = val_acc+acc
+        if epoch % 1000 == 0:
+            net.save_parameters( para_filepath ) 
 
 if __name__ == '__main__':
     num_epochs = 10000
-    train(1000,0.2)
-    train(num_epochs,0.1)
-    train(num_epochs,0.01)
-    train(num_epochs,0.001)
+    #train(1000,0.2)
+    train(1000,0.1)
+    train(1600,0.01)
+    train(2000,0.001)

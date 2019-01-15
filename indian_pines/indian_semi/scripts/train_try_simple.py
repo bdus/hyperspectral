@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec 27 20:14:03 2018
+Created on Tue Jan 15 21:02:21 2019
 
 @author: bdus
-
 """
+
+
 
 import os
 import os.path as osp
@@ -22,7 +22,12 @@ add_path(lib_path)
 this_dir = osp.dirname(__file__)
 data_path = osp.join(this_dir, '..', 'data')
 
+this_dir = osp.dirname(__file__)
+model_path = osp.join(this_dir, '..', 'symbols')
+add_path(model_path)
 
+#from symbols import symbols
+import symbols
 import mxnet as mx
 import numpy as np
 
@@ -37,32 +42,15 @@ out_put_num = 16
 dropout_rate=0.8
 ctx = mx.gpu()
 #modelname = 'indian_try'
-modelname = 'indian_conv'
+modelname = 'indian_simple'
 para_filepath = os.path.join(this_dir,'..','symbols','para','%s.params'%(modelname)) 
 # dataset
 train_data = gluon.data.DataLoader(dataset=IndianDataset(train=True), batch_size=batch_size ,shuffle=True,last_batch='rollover')
 val_data = gluon.data.DataLoader(dataset=IndianDataset(train=False), batch_size=batch_size ,shuffle=False)
 
 # model 
-net = nn.Sequential()
-#net.add(
-#        nn.Dense(500,activation='relu'),
-#        nn.Dense(256,activation='relu'),
-#        nn.Dropout(dropout_rate),
-#        nn.Dense(out_put_num,activation='sigmoid')
-#    )
-net.add(
-    nn.Conv1D(8,kernel_size=5,activation='relu'),
-    nn.Conv1D(16,kernel_size=5,activation='relu'),
-    nn.BatchNorm(momentum=0.8),
-    nn.MaxPool1D(pool_size=2),
-    nn.Conv1D(16,kernel_size=1,activation='relu'),
-    nn.Conv1D(16,kernel_size=5,activation='relu'),
-    nn.Flatten(),
-    nn.Dense(256,activation='relu'),
-    nn.Dropout(0.25),
-    nn.Dense(out_put_num,activation='relu')
-    )
+basemodel_zoo = 'simple2'
+net = symbols.get_model(basemodel_zoo)
 net.initialize(mx.init.Xavier(magnitude=2.24))
 #net.initialize(mx.init.MSRAPrelu())
 #net.initialize(mx.init.Normal(0.5) ,ctx=ctx)
@@ -85,7 +73,7 @@ def test():
 
 def train(epochs,lr=0.1):
     val_acc_bk = 0
-    trainer = gluon.Trainer(net.collect_params(),'Adam',{'learning_rate':lr})
+    trainer = gluon.Trainer(net.collect_params(),'sgd',{'learning_rate':lr})
     for epoch in range(num_epochs):
         metric.reset()
         for i, (x, y) in enumerate(train_data): 
@@ -110,7 +98,5 @@ def train(epochs,lr=0.1):
 
 if __name__ == '__main__':
     num_epochs = 10000
-    train(1000,0.2)
-    train(num_epochs,0.1)
-    train(num_epochs,0.01)
-    train(num_epochs,0.001)
+    train(100,0.1)
+    
