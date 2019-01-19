@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan 15 21:02:21 2019
+Created on Sat Jan 19 20:20:34 2019
 
 @author: bdus
+
 """
+
 
 
 import os
@@ -44,7 +46,7 @@ stochastic_ratio = 0.01
 val_acc_bk = 0
 ctx = mx.gpu()
 #modelname = 'indian_try'
-modelname = 'indian_simple2'
+modelname = 'indian_simple_Xav2.24'
 para_filepath = os.path.join(this_dir,'..','symbols','para','%s.params'%(modelname)) 
 # dataset
 train_data = gluon.data.DataLoader(dataset=IndianDataset(train=True), batch_size=batch_size ,shuffle=True,last_batch='rollover')
@@ -59,8 +61,8 @@ basemodel_zoo = 'simple2'
 net = symbols.get_model(basemodel_zoo)
 #net_t = symbols.get_model(basemodel_zoo)
 
-#net.initialize(mx.init.Xavier(magnitude=2.24))
-net.initialize(mx.init.MSRAPrelu())
+net.initialize(mx.init.Xavier(magnitude=2.24))
+#net.initialize(mx.init.MSRAPrelu())
 #net_t.initialize(mx.init.MSRAPrelu())
 #net.initialize(mx.init.Normal(0.5) ,ctx=ctx)
 #net.load_parameters(para_filepath)
